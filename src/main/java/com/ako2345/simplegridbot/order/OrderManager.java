@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 
 public interface OrderManager {
 
-    OrderResult buy(int lotsPerGrid, BigDecimal currentPrice);
+    OrderResult buy(String figi, int lotsNumber, BigDecimal lotSize);
 
-    OrderResult sell(int lotsPerGrid, BigDecimal currentPrice);
+    OrderResult sell(String figi, int lotsNumber, BigDecimal lotSize);
 
 }

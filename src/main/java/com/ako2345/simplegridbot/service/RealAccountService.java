@@ -10,7 +10,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class SandboxAccountService implements AccountService {
+public class RealAccountService implements AccountService {
 
     private final SdkService sdkService;
     private final ConfigService configService;
@@ -18,7 +18,7 @@ public class SandboxAccountService implements AccountService {
     @Override
     public PostOrderResponse buy(String figi, int lotsNumber) {
         var orderId = UUID.randomUUID().toString();
-        var orderResponse = sdkService.getInvestApi().getSandboxService().postOrderSync(
+        var orderResponse = sdkService.getInvestApi().getOrdersService().postOrderSync(
                 figi,
                 lotsNumber,
                 Quotation.getDefaultInstance(),
@@ -37,7 +37,7 @@ public class SandboxAccountService implements AccountService {
     @Override
     public PostOrderResponse sell(String figi, int lotsNumber) {
         var orderId = UUID.randomUUID().toString();
-        var orderResponse = sdkService.getInvestApi().getSandboxService().postOrderSync(
+        var orderResponse = sdkService.getInvestApi().getOrdersService().postOrderSync(
                 figi,
                 lotsNumber,
                 Quotation.getDefaultInstance(),

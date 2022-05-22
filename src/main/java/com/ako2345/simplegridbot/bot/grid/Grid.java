@@ -1,4 +1,4 @@
-package com.ako2345.simplegridbot.grid;
+package com.ako2345.simplegridbot.bot.grid;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -36,9 +36,9 @@ public class Grid {
         this.gridsNumber = gridsNumber;
 
         priceLevels = new BigDecimal[gridsNumber];
-        priceStep = upperPrice.subtract(lowerPrice).divide(new BigDecimal(gridsNumber - 1), DEFAULT_SCALE, RoundingMode.DOWN);
+        priceStep = upperPrice.subtract(lowerPrice).divide(BigDecimal.valueOf(gridsNumber - 1), DEFAULT_SCALE, RoundingMode.DOWN);
         for (int i = 0; i < gridsNumber - 1; i++) {
-            priceLevels[i] = lowerPrice.add(priceStep.multiply(new BigDecimal(i)));
+            priceLevels[i] = lowerPrice.add(priceStep.multiply(BigDecimal.valueOf(i)));
         }
         priceLevels[gridsNumber - 1] = upperPrice;
     }
@@ -57,16 +57,6 @@ public class Grid {
         return price.subtract(lowerPrice).divide(priceStep, RoundingMode.DOWN).intValue();
     }
 
-    /**
-     * Возвращает ценовой уровень по индексу.
-     *
-     * @param index Индекс уенового уровня.
-     * @return Ценовой уровень сетки.
-     */
-    public BigDecimal getPriceLevel(int index) {
-        return priceLevels[index];
-    }
-
     public BigDecimal[] getPriceLevels() {
         return priceLevels;
     }
@@ -81,6 +71,10 @@ public class Grid {
 
     public int getGridsNumber() {
         return gridsNumber;
+    }
+
+    public BigDecimal getPriceStep() {
+        return priceStep;
     }
 
 }

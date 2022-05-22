@@ -11,5 +11,6 @@ public class OrderResult {
 
     private final boolean isSuccessful;
     private final BigDecimal price;
+    private final BigDecimal baseCurrencyAmount;
 
 }
