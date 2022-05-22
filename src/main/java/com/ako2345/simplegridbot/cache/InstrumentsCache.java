@@ -19,17 +19,24 @@ public class InstrumentsCache {
 
     private final SdkService sdkService;
 
-    public void add(String figi) {
-        var instrument = sdkService.getInvestApi().getInstrumentsService().getInstrumentByFigiSync(figi);
-        instruments.put(figi, instrument);
+    private Instrument getInstrument(String figi) {
+        var instrument = instruments.get(figi);
+        if (instrument == null) {
+            instrument = sdkService.getInvestApi().getInstrumentsService().getInstrumentByFigiSync(figi);
+            instruments.put(figi, instrument);
+        }
+        return instrument;
+    }
+
+    public String getName(String figi) {
+        var instrument = getInstrument(figi);
+        return instrument.getName();
     }
 
     public BigDecimal getLotSize(String figi) {
-        if (!instruments.containsKey(figi)) {
-            add(figi);
-        }
-        var lotSize = BigDecimal.valueOf(instruments.get(figi).getLot());
-        if (lotSize.equals(BigDecimal.ZERO)) {
+        var instrument = getInstrument(figi);
+        var lotSize = BigDecimal.valueOf(instrument.getLot());
+        if (BigDecimal.ZERO.compareTo(lotSize) == 0) {
             throw new IllegalArgumentException("Lot size can not be 0. FIGI: " + figi);
         }
         return lotSize;
