@@ -11,6 +11,9 @@ import com.ako2345.simplegridbot.order.TrueOrderManager;
 import com.ako2345.simplegridbot.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,6 +38,23 @@ public class ApplicationController {
     private final BacktestService backtestService;
     private final InstrumentsCache instrumentsCache;
     private GridBot gridBot;
+
+    @GetMapping("/")
+    public ResponseEntity<String> statistics() {
+        if (gridBot == null) {
+            var noRunningBotsString = "There is no running bots at the moment";
+            log.info(noRunningBotsString);
+            return new ResponseEntity<>(noRunningBotsString, HttpStatus.OK);
+        }
+        var figi = gridBot.getFigi();
+        var currentPrice = infoService.getLastPrice(figi);
+        var gridBotStatistics = gridBot.getStatistics(currentPrice);
+        var statisticsString = "Grid bot is active. " +
+                "Instrument name: " + instrumentsCache.getName(figi) + " (FIGI: " + figi + "). " +
+                "Statistics: " + gridBotStatistics.toString();
+        log.info(statisticsString);
+        return new ResponseEntity<>(statisticsString, HttpStatus.OK);
+    }
 
     @PostMapping("/grid_bot/analyze")
     public void analyze(@RequestBody AnalysisConfig config) {

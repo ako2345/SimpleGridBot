@@ -89,16 +89,26 @@ public class GridBot implements OrdersStreamServiceListener {
         return gridProfit;
     }
 
-    public int getTransactionsCount() {
-        var transactionsCount = 0;
+    public int getTransactionsNumber() {
+        var transactionsNumber = 0;
         for (TransactionPair transactionPair : transactionPairs) {
             if (transactionPair.isIncomplete()) {
-                transactionsCount++;
+                transactionsNumber++;
             } else {
-                transactionsCount += 2;
+                transactionsNumber += 2;
             }
         }
-        return transactionsCount;
+        return transactionsNumber;
+    }
+
+    public int getArbitrageNumber() {
+        var arbitrageNumber = 0;
+        for (TransactionPair transactionPair : transactionPairs) {
+            if (!transactionPair.isIncomplete()) {
+                arbitrageNumber++;
+            }
+        }
+        return arbitrageNumber;
     }
 
     private TransactionPair getLastIncompleteTransactionPair() {
@@ -116,7 +126,8 @@ public class GridBot implements OrdersStreamServiceListener {
         var totalProfitPercentage = totalProfit.divide(initialBalance, Constants.DEFAULT_SCALE, RoundingMode.DOWN);
         var gridProfitPercentage = gridProfit.divide(initialBalance, Constants.DEFAULT_SCALE, RoundingMode.DOWN);
         var unrealizedProfitPercentage = unrealizedProfit.divide(initialBalance, Constants.DEFAULT_SCALE, RoundingMode.DOWN);
-        var transactionsCount = getTransactionsCount();
+        var transactionsNumber = getTransactionsNumber();
+        var arbitragesNumber = getArbitrageNumber();
         return new GridBotStatistics(
                 totalProfitPercentage,
                 totalProfit,
@@ -124,7 +135,8 @@ public class GridBot implements OrdersStreamServiceListener {
                 gridProfit,
                 unrealizedProfitPercentage,
                 unrealizedProfit,
-                transactionsCount
+                transactionsNumber,
+                arbitragesNumber
         );
     }
 

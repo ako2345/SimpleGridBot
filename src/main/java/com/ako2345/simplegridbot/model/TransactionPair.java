@@ -21,7 +21,7 @@ public class TransactionPair {
     }
 
     public boolean isIncomplete() {
-        return openTransaction == null || closeTransaction == null;
+        return closeTransaction == null || openTransaction == null;
     }
 
     public BigDecimal profit() {

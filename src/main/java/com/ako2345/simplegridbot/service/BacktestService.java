@@ -8,7 +8,6 @@ import com.ako2345.simplegridbot.controller.config.BacktestConfig;
 import com.ako2345.simplegridbot.model.CachedCandle;
 import com.ako2345.simplegridbot.model.Order;
 import com.ako2345.simplegridbot.order.FakeOrderManager;
-import com.ako2345.simplegridbot.util.TextUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -58,17 +57,7 @@ public class BacktestService {
 
         var gridBotStatistics = simulatePriceChanging(gridBot, fakeOrderManager, initialPrice, candles);
 
-        var totalProfitPercentageString = TextUtils.formatProfitPercentage(gridBotStatistics.getTotalProfitPercentage());
-        var totalProfitString = TextUtils.formatProfit(gridBotStatistics.getTotalProfit());
-        var gridProfitString = TextUtils.formatProfit(gridBotStatistics.getGridProfit());
-        var unrealizedProfitString = TextUtils.formatProfit(gridBotStatistics.getUnrealizedProfit());
-        log.info(
-                "Backtest complete. Profit percentage: {}, total profit: {} (grid profit: {}, unrealized profit: {})",
-                totalProfitPercentageString,
-                totalProfitString,
-                gridProfitString,
-                unrealizedProfitString
-        );
+        log.info("Backtest complete. Statistics: {}", gridBotStatistics);
     }
 
     public GridBotStatistics simulatePriceChanging(GridBot gridBot, FakeOrderManager fakeOrderManager, BigDecimal initialPrice, Set<CachedCandle> candles) {
