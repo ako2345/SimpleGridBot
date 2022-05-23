@@ -33,6 +33,11 @@ public class InstrumentsCache {
         return instrument.getName();
     }
 
+    public String getExchange(String figi) {
+        var instrument = getInstrument(figi);
+        return instrument.getExchange();
+    }
+
     public BigDecimal getLotSize(String figi) {
         var instrument = getInstrument(figi);
         var lotSize = BigDecimal.valueOf(instrument.getLot());

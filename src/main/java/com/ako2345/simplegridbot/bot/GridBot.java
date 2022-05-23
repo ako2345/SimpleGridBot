@@ -120,7 +120,7 @@ public class GridBot implements OrdersStreamServiceListener {
         }
     }
 
-    private void createNewLimitOrders(BigDecimal currentPrice) {
+    public void createNewLimitOrders(BigDecimal currentPrice) {
         var priceLevels = gridManager.getGrid().getPriceLevels();
         for (BigDecimal price : priceLevels) {
             if (pricesWithLimitOrders.contains(price.doubleValue())) continue;
@@ -157,6 +157,10 @@ public class GridBot implements OrdersStreamServiceListener {
                 this.baseCurrencyAmount.setScale(4, RoundingMode.DOWN),
                 this.instrumentAmount.setScale(4, RoundingMode.DOWN)
         );
+    }
+
+    public void clearPriceLevelsWithLimitOrders() {
+        pricesWithLimitOrders.clear();
     }
 
     public BigDecimal getBalance(BigDecimal price) {

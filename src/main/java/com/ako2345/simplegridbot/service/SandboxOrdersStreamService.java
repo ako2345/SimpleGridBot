@@ -34,7 +34,7 @@ public class SandboxOrdersStreamService {
     protected final SandboxOrderService sandboxOrderService;
     protected final InstrumentsCache instrumentsCache;
     private final List<OrdersStreamServiceListener> listeners;
-    private final Timer timer = new Timer("Timer");
+    private Timer timer;
     private BigDecimal previousPrice;
     private List<Order> previousOrders;
 
@@ -74,6 +74,7 @@ public class SandboxOrdersStreamService {
             }
 
         };
+        timer = new Timer();
         timer.scheduleAtFixedRate(task, 0, 4000L);
     }
 

@@ -5,7 +5,7 @@ import lombok.Data;
 import java.time.Instant;
 
 @Data
-public class ExchangeScheduleForDay {
+public class ExchangeScheduleForDate {
 
     private final boolean isTradingDay;
     private final Instant openTime;

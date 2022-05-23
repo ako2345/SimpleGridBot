@@ -1,6 +1,6 @@
 package com.ako2345.simplegridbot.cache;
 
-import com.ako2345.simplegridbot.model.ExchangeScheduleForDay;
+import com.ako2345.simplegridbot.model.ExchangeScheduleForDate;
 import com.ako2345.simplegridbot.service.SdkService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,9 +19,9 @@ public class TradingScheduleCache {
 
     private final SdkService sdkService;
 
-    private final Map<String, Map<LocalDate, ExchangeScheduleForDay>> schedule = new HashMap<>();
+    private final Map<String, Map<LocalDate, ExchangeScheduleForDate>> schedule = new HashMap<>();
 
-    public ExchangeScheduleForDay getExchangeScheduleForDate(String exchange, LocalDate date) {
+    public ExchangeScheduleForDate getExchangeScheduleForDate(String exchange, LocalDate date) {
         var exchangeSchedule = schedule.computeIfAbsent(exchange, k -> new HashMap<>());
         var exchangeScheduleForDate = exchangeSchedule.get(date);
         if (exchangeScheduleForDate == null) {
@@ -37,9 +37,9 @@ public class TradingScheduleCache {
             if (tradingDay.getIsTradingDay()) {
                 var startTime = Instant.ofEpochSecond(tradingDay.getStartTime().getSeconds());
                 var closeTime = Instant.ofEpochSecond(tradingDay.getEndTime().getSeconds());
-                exchangeScheduleForDate = new ExchangeScheduleForDay(true, startTime, closeTime);
+                exchangeScheduleForDate = new ExchangeScheduleForDate(true, startTime, closeTime);
             } else {
-                exchangeScheduleForDate = new ExchangeScheduleForDay(false, null, null);
+                exchangeScheduleForDate = new ExchangeScheduleForDate(false, null, null);
             }
             exchangeSchedule.put(date, exchangeScheduleForDate);
         }
