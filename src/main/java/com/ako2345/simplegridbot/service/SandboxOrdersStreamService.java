@@ -16,6 +16,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * В режиме "песочницы" нельзя использовать OrdersStreamService, поэтому придётся эмулировать информирование об
@@ -32,10 +34,11 @@ public class SandboxOrdersStreamService {
     protected final SandboxOrderService sandboxOrderService;
     protected final InstrumentsCache instrumentsCache;
     private final List<OrdersStreamServiceListener> listeners;
+    private final Timer timer = new Timer("Timer");
     private BigDecimal previousPrice;
     private List<Order> previousOrders;
 
-    public void subscribePrices(String figi, Grid grid) {
+    private void subscribePrices(String figi, Grid grid) {
         if (!configService.getSandboxMode()) return;
         previousOrders = sandboxOrderService.getOrders(figi);
         previousPrice = infoService.getLastPrice(figi);
@@ -58,8 +61,24 @@ public class SandboxOrdersStreamService {
         infoService.subscribePrice(figi, processor);
     }
 
-    public void unsubscribePrices(String figi) {
+    private void unsubscribePrices(String figi) {
         infoService.unsubscribePrice(figi);
+    }
+
+    private void startPeriodicOrdersSync(String figi) {
+        var task = new TimerTask() {
+
+            @Override
+            public void run() {
+                syncOrders(figi);
+            }
+
+        };
+        timer.scheduleAtFixedRate(task, 0, 4000L);
+    }
+
+    private void stopPeriodicOrdersSync() {
+        timer.cancel();
     }
 
     private void syncOrders(String figi) {
@@ -67,6 +86,11 @@ public class SandboxOrdersStreamService {
         var executedOrders = new ArrayList<Order>();
         for (Order order : previousOrders) {
             if (!currentOrders.contains(order)) {
+                log.info(
+                        "Executed order detected (order ID: {}, price: {})",
+                        order.getOrderId(),
+                        order.getPrice().setScale(4, RoundingMode.HALF_DOWN)
+                );
                 executedOrders.add(order);
             }
         }
@@ -92,12 +116,14 @@ public class SandboxOrdersStreamService {
         if (!listeners.contains(gridBot)) {
             listeners.add(gridBot);
             subscribePrices(gridBot.getFigi(), gridBot.getGridManager().getGrid());
+            startPeriodicOrdersSync(gridBot.getFigi());
         }
     }
 
     public void removeListener(GridBot gridBot) {
         listeners.remove(gridBot);
         unsubscribePrices(gridBot.getFigi());
+        stopPeriodicOrdersSync();
     }
 
 }
